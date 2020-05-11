@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
     <FrameLayout
         android:id="@+id/frameLayout2"
         android:layout_width="0dp"
@@ -30,6 +29,7 @@
 
     </FrameLayout>
 
+    <!-- Start Quiz Button -->
     <Button
         android:id="@+id/start_btn"
         android:layout_width="150dp"
@@ -44,6 +44,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Bookmark Button -->
     <Button
         android:id="@+id/Bookmarks_btn"
         android:layout_width="150dp"

@@ -7,22 +7,24 @@
     android:orientation="horizontal"
     android:padding="16dp">
 
+    <!-- Circular Image View -->
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageView"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@color/colorPrimary" />
 
+    <!-- Categories Title -->
     <TextView
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:padding="8dp"
         android:text="Title"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         android:textStyle="bold" />

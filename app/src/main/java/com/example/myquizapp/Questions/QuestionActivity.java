@@ -1,10 +1,13 @@
 package com.example.myquizapp.Questions;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.animation.Animator;
+import android.app.Dialog;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,14 +16,24 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myquizapp.R;
+import com.example.myquizapp.Scores.ScoreActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionActivity extends AppCompatActivity {
+
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference();
 
     private TextView question, numIndicator;
     private Button sharebtn, nextbtn;
@@ -31,6 +44,9 @@ public class QuestionActivity extends AppCompatActivity {
     private List<QuestionModel> list;
     private int position = 0;
     private int score = 0;
+    private String category;
+    private int setNo;
+    private Dialog loadingDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,42 +64,76 @@ public class QuestionActivity extends AppCompatActivity {
         sharebtn = findViewById(R.id.share_btn);
         nextbtn = findViewById(R.id.next_btn);
 
-        // Dummy Questions
+        // Get Category and setNo
+        category = getIntent().getStringExtra("category");
+        setNo = getIntent().getIntExtra("setNo", 1);
+
+        // Create Loading Dialog
+        loadingDialog = new Dialog(this);
+        loadingDialog.setContentView(R.layout.loading);
+        loadingDialog.setCancelable(false);
+        // set dialog Width & Height
+        loadingDialog.getWindow().setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        // set Rounded Loading Dialog
+        loadingDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.rounded_corners));
+
         list = new ArrayList<>();
-        list.add(new QuestionModel("question1", "a", "b", "c", "d", "c"));
-        list.add(new QuestionModel("question2", "a", "b", "c", "d", "d"));
-        list.add(new QuestionModel("question3", "a", "b", "c", "d", "c"));
-        list.add(new QuestionModel("question4", "a", "b", "c", "d", "b"));
-        list.add(new QuestionModel("question5", "a", "b", "c", "d", "a"));
 
-        for (int i = 0; i < 4; i++) {
-            optionscontainer.getChildAt(i).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    checkAnswer(((Button) view));
-                }
-            });
-        }
-
-        // default one question load
-        playAnim(question, 0, list.get(position).getQuestion());
-
-        // goto next Question
-        nextbtn.setOnClickListener(new View.OnClickListener() {
+        loadingDialog.show();
+        // get Data from Firebase
+        myRef.child("SETS").child(category).child("questions").orderByChild("setNo").equalTo(setNo).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                nextbtn.setEnabled(false);
-                nextbtn.setAlpha(0.7f);
-                position++;
-                if (position == list.size()) {
-                    // goto Score Activity
-                    return;
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    list.add(snapshot.getValue(QuestionModel.class));
                 }
-                count = 0;
-                playAnim(question, 0, list.get(position).getQuestion());
+
+                if (list.size() > 0) {
+
+                    for (int i = 0; i < 4; i++) {
+                        optionscontainer.getChildAt(i).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                checkAnswer(((Button) view));
+                            }
+                        });
+                    }
+                    playAnim(question, 0, list.get(position).getQuestion());
+                    // goto next Question
+                    nextbtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            nextbtn.setEnabled(false);
+                            nextbtn.setAlpha(0.7f);
+                            enableOption(true);
+                            position++;
+                            if (position == list.size()) {
+                                // goto Score Activity
+                                Intent scoreIntent = new Intent(QuestionActivity.this, ScoreActivity.class);
+                                scoreIntent.putExtra("score",score);
+                                scoreIntent.putExtra("total",list.size());
+                                startActivity(scoreIntent);
+                                finish(); // finish Question Activity
+                                return;
+                            }
+                            count = 0;
+                            playAnim(question, 0, list.get(position).getQuestion());
+                        }
+                    });
+                } else {
+                    finish();
+                    Toast.makeText(QuestionActivity.this, "no question", Toast.LENGTH_SHORT).show();
+                }
+                loadingDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(QuestionActivity.this, databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                loadingDialog.dismiss();
+                finish();
             }
         });
-
     }
 
     // for Question and option
@@ -122,6 +172,7 @@ public class QuestionActivity extends AppCompatActivity {
                 if (value == 0) {
                     try {
                         ((TextView) view).setText(data);
+                        numIndicator.setText(position + 1 + "/" + list.size());
                     } catch (ClassCastException e) {
                         ((Button) view).setText(data);
                     }
@@ -158,9 +209,14 @@ public class QuestionActivity extends AppCompatActivity {
         }
     }
 
+    // next button will Enable
+    // After any option will select
     private void enableOption(boolean enable) {
         for (int i = 0; i < 4; i++) {
             optionscontainer.getChildAt(i).setEnabled(enable);
+            if (enable) {
+                optionscontainer.getChildAt(i).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#989898")));
+            }
         }
     }
 }

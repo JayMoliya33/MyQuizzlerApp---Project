@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="90dp"
     android:layout_height="90dp"
-    android:gravity="center"
     android:layout_margin="16dp"
-    android:backgroundTint="#F3F3F3"
     android:background="@drawable/rounded_corners"
+    android:backgroundTint="#F3F3F3"
+    android:gravity="center"
     android:orientation="vertical">
 
     <TextView

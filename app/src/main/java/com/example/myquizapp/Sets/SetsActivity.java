@@ -11,8 +11,6 @@ import com.example.myquizapp.R;
 
 public class SetsActivity extends AppCompatActivity {
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,9 +25,10 @@ public class SetsActivity extends AppCompatActivity {
         //GridView
         GridView gridview = findViewById(R.id.gridView);
 
-        GridAdapter adapter = new GridAdapter(15);
+        GridAdapter adapter = new GridAdapter(getIntent().getIntExtra("sets",0),getIntent().getStringExtra("title"));
         gridview.setAdapter(adapter);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

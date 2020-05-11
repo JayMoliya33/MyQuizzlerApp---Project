@@ -26,6 +26,7 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <!-- Questions Layout -->
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
@@ -58,6 +59,7 @@
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!--Options Layout -->
     <LinearLayout
         android:id="@+id/options_containers"
         android:layout_width="match_parent"
@@ -76,7 +78,8 @@
             android:layout_margin="8dp"
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
-            android:text="Button" />
+            android:text="Button"
+            android:textColor="@android:color/black" />
 
         <Button
             android:id="@+id/button2"
@@ -85,7 +88,8 @@
             android:layout_margin="8dp"
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
-            android:text="Button" />
+            android:text="Button"
+            android:textColor="@android:color/black" />
 
         <Button
             android:id="@+id/button3"
@@ -94,7 +98,8 @@
             android:layout_margin="8dp"
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
-            android:text="Button" />
+            android:text="Button"
+            android:textColor="@android:color/black" />
 
         <Button
             android:id="@+id/button4"
@@ -103,10 +108,12 @@
             android:layout_margin="8dp"
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
-            android:text="Button" />
+            android:text="Button"
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 
+    <!-- Share Button -->
     <Button
         android:id="@+id/share_btn"
         android:layout_width="0dp"
@@ -123,17 +130,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/options_containers" />
 
+    <!-- Next Button -->
     <Button
         android:id="@+id/next_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:alpha="0.7"
         android:background="@drawable/rounded_corners"
         android:backgroundTint="#848484"
-        android:text="@string/next"
         android:enabled="false"
-        android:alpha="0.7"
+        android:text="@string/next"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,6 +149,7 @@
         app:layout_constraintStart_toEndOf="@+id/share_btn"
         app:layout_constraintTop_toBottomOf="@+id/options_containers" />
 
+    <!-- Bookmark Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/bookmark_btn"
         android:layout_width="wrap_content"

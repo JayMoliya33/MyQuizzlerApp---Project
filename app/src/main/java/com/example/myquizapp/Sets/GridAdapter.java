@@ -13,10 +13,12 @@ import com.example.myquizapp.R;
 public class GridAdapter extends BaseAdapter {
 
     private int sets = 0;
+    private String category;
 
     // Constructor
-    public GridAdapter(int sets) {
+    public GridAdapter(int sets, String category) {
         this.sets = sets;
+        this.category = category;
     }
 
     // return total no of sets
@@ -36,7 +38,7 @@ public class GridAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertview, final ViewGroup parent) {
+    public View getView(final int position, View convertview, final ViewGroup parent) {
 
         View view;
         if (convertview == null) {
@@ -50,10 +52,13 @@ public class GridAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(parent.getContext(), QuestionActivity.class);
+                intent.putExtra("category",category);
+                intent.putExtra("setNo",position+1);
                 parent.getContext().startActivity(intent);
             }
         });
 
+        // Set sets number from 1
         ((TextView) view.findViewById(R.id.settextview)).setText(String.valueOf(position + 1));
 
         return view;
