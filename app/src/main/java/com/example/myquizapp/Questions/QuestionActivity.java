@@ -6,8 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.animation.Animator;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -26,11 +29,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuestionActivity extends AppCompatActivity {
+
+    public static final String FIILE_NAME = "QUIZZLER";
+    public static final String KEY_NAME = "QUESTIONS";
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
@@ -48,6 +57,14 @@ public class QuestionActivity extends AppCompatActivity {
     private int setNo;
     private Dialog loadingDialog;
 
+    private List<QuestionModel> bookmarksList;
+
+    // Bookmark variable;
+    private SharedPreferences prefrences;
+    private SharedPreferences.Editor editor;
+    private Gson gson;
+    private int matchedQuestionPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +81,28 @@ public class QuestionActivity extends AppCompatActivity {
         sharebtn = findViewById(R.id.share_btn);
         nextbtn = findViewById(R.id.next_btn);
 
+        // Shared Preferences
+        prefrences = getSharedPreferences(FIILE_NAME, Context.MODE_PRIVATE);
+        editor = prefrences.edit();
+        gson = new Gson();
+
+        getBookmarks();
+
+        // click on Bookmarkbtn
+        bookmarkBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (modelMatch()) {
+                    bookmarksList.remove(matchedQuestionPosition);
+                    bookmarkBtn.setImageDrawable(getDrawable(R.drawable.bookmark_border));
+                } else {
+                    // add question to bookmark activity
+                    bookmarksList.add(list.get(position));
+                    bookmarkBtn.setImageDrawable(getDrawable(R.drawable.bookmark));
+                }
+            }
+        });
+
         // Get Category and setNo
         category = getIntent().getStringExtra("category");
         setNo = getIntent().getIntExtra("setNo", 1);
@@ -73,7 +112,7 @@ public class QuestionActivity extends AppCompatActivity {
         loadingDialog.setContentView(R.layout.loading);
         loadingDialog.setCancelable(false);
         // set dialog Width & Height
-        loadingDialog.getWindow().setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+        loadingDialog.getWindow().setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         // set Rounded Loading Dialog
         loadingDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.rounded_corners));
 
@@ -110,14 +149,31 @@ public class QuestionActivity extends AppCompatActivity {
                             if (position == list.size()) {
                                 // goto Score Activity
                                 Intent scoreIntent = new Intent(QuestionActivity.this, ScoreActivity.class);
-                                scoreIntent.putExtra("score",score);
-                                scoreIntent.putExtra("total",list.size());
+                                scoreIntent.putExtra("score", score);
+                                scoreIntent.putExtra("total", list.size());
                                 startActivity(scoreIntent);
                                 finish(); // finish Question Activity
                                 return;
                             }
                             count = 0;
                             playAnim(question, 0, list.get(position).getQuestion());
+                        }
+                    });
+
+                    // Share Question code
+                    sharebtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String body = list.get(position).getQuestion() + "\n" +
+                                    list.get(position).getOptionA() + "\n" +
+                                    list.get(position).getOptionB() + "\n" +
+                                    list.get(position).getOptionC() + "\n" +
+                                    list.get(position).getOptionD();
+                            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                            shareIntent.setType("text/plain");
+                            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Quizzler Challenge");
+                            shareIntent.putExtra(Intent.EXTRA_TEXT, body);
+                            startActivity(Intent.createChooser(shareIntent, "Share Via"));
                         }
                     });
                 } else {
@@ -134,6 +190,12 @@ public class QuestionActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        storeBookmarks();
     }
 
     // for Question and option
@@ -166,6 +228,7 @@ public class QuestionActivity extends AppCompatActivity {
                 }
             }
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void onAnimationEnd(Animator animator) {
                 // set Data
@@ -173,6 +236,12 @@ public class QuestionActivity extends AppCompatActivity {
                     try {
                         ((TextView) view).setText(data);
                         numIndicator.setText(position + 1 + "/" + list.size());
+                        if (modelMatch()) {
+                            // setImages
+                            bookmarkBtn.setImageDrawable(getDrawable(R.drawable.bookmark));
+                        } else {
+                            bookmarkBtn.setImageDrawable(getDrawable(R.drawable.bookmark_border));
+                        }
                     } catch (ClassCastException e) {
                         ((Button) view).setText(data);
                     }
@@ -218,5 +287,41 @@ public class QuestionActivity extends AppCompatActivity {
                 optionscontainer.getChildAt(i).setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#989898")));
             }
         }
+    }
+
+    // called in onCreate()
+    private void getBookmarks() {
+        String json = prefrences.getString(KEY_NAME, "");
+
+        Type type = new TypeToken<List<QuestionModel>>() {
+        }.getType();
+
+        bookmarksList = gson.fromJson(json, type);
+
+        if (bookmarksList == null) {
+            bookmarksList = new ArrayList<>();
+        }
+    }
+
+    private boolean modelMatch() {
+        boolean matched = false;
+        int i = 0;
+        for (QuestionModel model : bookmarksList) {
+            if (model.getQuestion().equals(list.get(position).getQuestion())
+                    && model.getCorrectANS().equals(list.get(position).getCorrectANS())
+                    && model.getSetNo() == list.get(position).getSetNo()) {
+                matched = true;
+                matchedQuestionPosition = i;
+            }
+            i++;
+        }
+        return matched;
+    }
+
+    // called in onPause()
+    private void storeBookmarks() {
+        String json = gson.toJson(bookmarksList);
+        editor.putString(KEY_NAME, json);
+        editor.commit();
     }
 }

@@ -11,12 +11,13 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#8A8A8A" />
+        android:background="#8A8A8A"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec_bookmark"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
 </LinearLayout>

@@ -1,21 +1,18 @@
 package com.example.myquizapp.Bookmark;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.myquizapp.Questions.QuestionModel;
 import com.example.myquizapp.R;
-import com.example.myquizapp.Sets.SetsActivity;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHolder> {
 
@@ -34,7 +31,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setData(modelList.get(position).getQuestion(),modelList.get(position).getCorrectANS());
+        holder.setData(modelList.get(position).getQuestion(), modelList.get(position).getCorrectANS(),position);
     }
 
 
@@ -45,20 +42,33 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.ViewHo
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView question,answer;
+        private TextView question, answer;
+        private ImageButton deletebtn;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             question = itemView.findViewById(R.id.question);
             answer = itemView.findViewById(R.id.answer);
+            deletebtn = itemView.findViewById(R.id.deletebtn);
         }
 
         // setData method called in onBindViewHolder()
-        private void setData(String question,String answer) {
+        private void setData(String question, String answer,final int position) {
             this.question.setText(question);
             this.answer.setText(answer);
+
+            // Item Delete From Bookmark
+            deletebtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Remove from list
+                    modelList.remove(position);
+                    notifyItemRemoved(position);
+                }
+            });
         }
+
     }
 
 }

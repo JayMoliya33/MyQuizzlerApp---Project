@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
@@ -22,5 +23,13 @@
         android:padding="8dp"
         android:text="Answer"
         android:textColor="@android:color/black" />
+
+    <ImageButton
+        android:id="@+id/deletebtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/bookmark_delete" />
 
 </LinearLayout>
