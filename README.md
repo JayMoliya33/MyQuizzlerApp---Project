@@ -9,4 +9,5 @@ This application provides some following features :
 3. User can share a question.
 
 # Screenshot : 
-![Screenshot_20200602_120418](https://user-images.githubusercontent.com/52040275/83488738-f8a2f680-a4ca-11ea-9ad4-503f2d751bf4.jpg)
+
+
