@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.widget.GridView;
 
 import com.example.myquizapp.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class SetsActivity extends AppCompatActivity {
 
@@ -21,6 +23,9 @@ public class SetsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getIntent().getStringExtra("title"));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        // For Mobile Ads
+        loadAds();
 
         //GridView
         GridView gridview = findViewById(R.id.gridView);
@@ -36,5 +41,11 @@ public class SetsActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadAds() {
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }

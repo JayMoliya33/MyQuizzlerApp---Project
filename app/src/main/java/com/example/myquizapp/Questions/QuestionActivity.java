@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.example.myquizapp.R;
 import com.example.myquizapp.Scores.ScoreActivity;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,6 +43,7 @@ public class QuestionActivity extends AppCompatActivity {
     public static final String FIILE_NAME = "QUIZZLER";
     public static final String KEY_NAME = "QUESTIONS";
 
+    // Firebase
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference();
 
@@ -48,6 +51,7 @@ public class QuestionActivity extends AppCompatActivity {
     private Button sharebtn, nextbtn;
     private FloatingActionButton bookmarkBtn;
     private LinearLayout optionscontainer;
+    private List<QuestionModel> bookmarksList;
 
     private int count = 0;
     private List<QuestionModel> list;
@@ -56,8 +60,6 @@ public class QuestionActivity extends AppCompatActivity {
     private String category;
     private int setNo;
     private Dialog loadingDialog;
-
-    private List<QuestionModel> bookmarksList;
 
     // Bookmark variable;
     private SharedPreferences prefrences;
@@ -116,9 +118,10 @@ public class QuestionActivity extends AppCompatActivity {
         // set Rounded Loading Dialog
         loadingDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.rounded_corners));
 
+        loadingDialog.show();
+
         list = new ArrayList<>();
 
-        loadingDialog.show();
         // get Data from Firebase
         myRef.child("SETS").child(category).child("questions").orderByChild("setNo").equalTo(setNo).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -126,7 +129,6 @@ public class QuestionActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     list.add(snapshot.getValue(QuestionModel.class));
                 }
-
                 if (list.size() > 0) {
 
                     for (int i = 0; i < 4; i++) {
@@ -198,18 +200,11 @@ public class QuestionActivity extends AppCompatActivity {
         storeBookmarks();
     }
 
-    // for Question and option
+    // for Question and options
     // we applied Animation to that
     private void playAnim(final View view, final int value, final String data) {
 
-        view.animate()
-                .alpha(value)
-                .scaleX(value)
-                .scaleY(value)
-                .setDuration(500)
-                .setStartDelay(100)
-                .setInterpolator(new DecelerateInterpolator()).setListener(new Animator.AnimatorListener() {
-
+        view.animate().alpha(value).scaleX(value).scaleY(value).setDuration(500).setStartDelay(100).setInterpolator(new DecelerateInterpolator()).setListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
                 if (value == 0 && count < 4) {
@@ -235,7 +230,7 @@ public class QuestionActivity extends AppCompatActivity {
                 if (value == 0) {
                     try {
                         ((TextView) view).setText(data);
-                        numIndicator.setText(position + 1 + "/" + list.size());
+                        numIndicator.setText(position + 1 + "/" + list.size()); // setNum Indicator
                         if (modelMatch()) {
                             // setImages
                             bookmarkBtn.setImageDrawable(getDrawable(R.drawable.bookmark));
@@ -262,6 +257,7 @@ public class QuestionActivity extends AppCompatActivity {
         });
     }
 
+    // Check Answer
     private void checkAnswer(Button selectOption) {
         enableOption(false);
         nextbtn.setEnabled(true);
@@ -324,4 +320,5 @@ public class QuestionActivity extends AppCompatActivity {
         editor.putString(KEY_NAME, json);
         editor.commit();
     }
+
 }

@@ -8,6 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.myquizapp.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,6 +44,9 @@ public class CategoriesActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Categories");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // For Mobile Ads
+        loadAds();
+
         // Create Loading Dialog
         loadingDialog = new Dialog(this);
         loadingDialog.setContentView(R.layout.loading);
@@ -56,10 +61,8 @@ public class CategoriesActivity extends AppCompatActivity {
         DatabaseReference myRef = database.getReference();
 
         recyclerview = findViewById(R.id.recView);
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(RecyclerView.VERTICAL);
-
         recyclerview.setLayoutManager(layoutManager);
 
         list = new ArrayList<>();
@@ -97,5 +100,11 @@ public class CategoriesActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadAds() {
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }

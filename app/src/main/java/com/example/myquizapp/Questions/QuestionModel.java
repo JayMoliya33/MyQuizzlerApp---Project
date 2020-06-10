@@ -6,6 +6,7 @@ public class QuestionModel {
     private int setNo;
 
     public QuestionModel() {
+        // For Firebase
     }
 
     public QuestionModel(String question, String optionA, String optionB, String optionC, String optionD, String correctANS, int setNo) {

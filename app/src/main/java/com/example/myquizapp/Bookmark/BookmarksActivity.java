@@ -13,6 +13,8 @@ import android.view.MenuItem;
 
 import com.example.myquizapp.Questions.QuestionModel;
 import com.example.myquizapp.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -39,6 +41,10 @@ public class BookmarksActivity extends AppCompatActivity {
 
         // Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
+
+        // For Mobile Ads
+        loadAds();
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Bookmark");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -99,5 +105,11 @@ public class BookmarksActivity extends AppCompatActivity {
         String json = gson.toJson(bookmarksList);
         editor.putString(KEY_NAME, json);
         editor.commit();
+    }
+
+    private void loadAds() {
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }

@@ -37,6 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
+        <!-- Questions -->
         <TextView
             android:id="@+id/questions"
             android:layout_width="match_parent"
@@ -47,6 +48,7 @@
             android:text="TextView"
             android:textColor="@android:color/black" />
 
+        <!-- Number Indicator -->
         <TextView
             android:id="@+id/numindicator"
             android:layout_width="match_parent"
@@ -71,6 +73,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
+        <!-- Option A -->
         <Button
             android:id="@+id/button"
             android:layout_width="match_parent"
@@ -79,8 +82,10 @@
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
             android:text="Button"
+            android:textAllCaps="false"
             android:textColor="@android:color/black" />
 
+        <!-- Option B -->
         <Button
             android:id="@+id/button2"
             android:layout_width="match_parent"
@@ -89,8 +94,10 @@
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
             android:text="Button"
+            android:textAllCaps="false"
             android:textColor="@android:color/black" />
 
+        <!-- Option C -->
         <Button
             android:id="@+id/button3"
             android:layout_width="match_parent"
@@ -99,8 +106,10 @@
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
             android:text="Button"
+            android:textAllCaps="false"
             android:textColor="@android:color/black" />
 
+        <!-- Option D -->
         <Button
             android:id="@+id/button4"
             android:layout_width="match_parent"
@@ -109,6 +118,7 @@
             android:background="@drawable/rounded_borders"
             android:backgroundTint="#989898"
             android:text="Button"
+            android:textAllCaps="false"
             android:textColor="@android:color/black" />
 
     </LinearLayout>

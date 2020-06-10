@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.myquizapp.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 public class ScoreActivity extends AppCompatActivity {
 
@@ -18,6 +20,9 @@ public class ScoreActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_score);
+
+        // For Mobile Ads
+        loadAds();
 
         score = findViewById(R.id.score);
         total = findViewById(R.id.total);
@@ -33,5 +38,11 @@ public class ScoreActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void loadAds() {
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 }

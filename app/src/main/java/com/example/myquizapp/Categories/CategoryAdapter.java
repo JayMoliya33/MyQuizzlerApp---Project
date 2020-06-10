@@ -67,6 +67,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    // goto Sets Activity
                     Intent intent = new Intent(itemView.getContext(), SetsActivity.class);
                     intent.putExtra("title", title);
                     intent.putExtra("sets", sets);
