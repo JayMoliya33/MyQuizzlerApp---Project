@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.myquizapp.Questions.QuestionActivity.FIILE_NAME;
 import static com.example.myquizapp.Questions.QuestionActivity.KEY_NAME;
@@ -46,7 +47,7 @@ public class BookmarksActivity extends AppCompatActivity {
         loadAds();
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Bookmark");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Bookmark");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         recyclerview = findViewById(R.id.rec_bookmark);

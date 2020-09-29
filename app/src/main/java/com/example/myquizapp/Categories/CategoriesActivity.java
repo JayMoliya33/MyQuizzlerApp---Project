@@ -1,9 +1,13 @@
 package com.example.myquizapp.Categories;
 
 import android.app.Dialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import androidx.appcompat.widget.SearchView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -22,16 +26,25 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import static com.example.myquizapp.Categories.CategoryAdapter.*;
+
+import static com.example.myquizapp.Categories.CategoryAdapter.SPAN_COUNT_ONE;
 
 public class CategoriesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerview;
     public final String TAG = getClass().getSimpleName();
     private  List<CategoryModel> list ;
+    private CategoryAdapter adapter;
+
+    private GridLayoutManager gridLayoutManager;
 
     private Dialog loadingDialog;
+
+    private SearchView searchview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,27 +65,27 @@ public class CategoriesActivity extends AppCompatActivity {
         loadingDialog.setContentView(R.layout.loading);
         loadingDialog.setCancelable(false);
         // set dialog Width & Height
-        loadingDialog.getWindow().setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+       loadingDialog.getWindow().setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+      //  loadingDialog.getWindow().setLayout(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         // set Rounded Loading Dialog
-        loadingDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.rounded_corners));
+        loadingDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(R.drawable.rounded_corners));
 
         // Firebase Database Reference
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference();
 
         recyclerview = findViewById(R.id.recView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(RecyclerView.VERTICAL);
-        recyclerview.setLayoutManager(layoutManager);
+        gridLayoutManager = new GridLayoutManager(this,SPAN_COUNT_ONE);
 
         list = new ArrayList<>();
-        final CategoryAdapter adapter = new CategoryAdapter(list);
+        final CategoryAdapter adapter = new CategoryAdapter(list,gridLayoutManager);
         recyclerview.setAdapter(adapter);
+        recyclerview.setLayoutManager(gridLayoutManager);
 
         loadingDialog.show();
 
         // Read Data from Firebase
-        myRef.child("Categories").addListenerForSingleValueEvent(new ValueEventListener() {
+        myRef.child("Category").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
@@ -96,15 +109,81 @@ public class CategoriesActivity extends AppCompatActivity {
     // Finish Activity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
+        int id  = item.getItemId();
+
+        switch (id){
+            case android.R.id.home :
+                            finish();
+                            break;
+            case R.id.gridView :
+                switchLayout();
+                switchIcon(item);
+                return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
+    // Switch Layout
+    private void switchLayout() {
+        if(gridLayoutManager.getSpanCount()==SPAN_COUNT_ONE){
+            gridLayoutManager.setSpanCount(SPAN_COUNT_THREE);
+        }else{
+            gridLayoutManager.setSpanCount(SPAN_COUNT_ONE);
+        }
+    }
+
+    // Switch Icon
+    private void switchIcon(MenuItem item) {
+        if(gridLayoutManager.getSpanCount()==SPAN_COUNT_ONE){
+            item.setIcon(getResources().getDrawable(R.drawable.icon_grid));
+        }else{
+            item.setIcon(getResources().getDrawable(R.drawable.icon_list));
+        }
+    }
+
+    // LoadAds
     private void loadAds() {
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
+
+    // SearchView Logic
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main,menu);
+        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
+        searchview = (androidx.appcompat.widget.SearchView) menu.findItem(R.id.search).getActionView();
+        searchview.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchview.setMaxWidth(Integer.MAX_VALUE);
+        searchview.setQueryHint("Enter Categories");
+        searchview.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                performSearch(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                performSearch(newText);
+                return false;
+            }
+        });
+        return true;
+    }
+
+    private void performSearch(String s) {
+
+        ArrayList<CategoryModel> mylist = new ArrayList<>();
+        for(CategoryModel object : list) {
+            if(object.getTitle().toLowerCase().contains(s.toLowerCase())){
+                mylist.add(object);
+            }
+        }
+        CategoryAdapter adapter = new CategoryAdapter(mylist, gridLayoutManager);
+        recyclerview.setAdapter(adapter);
+    }
+
 }

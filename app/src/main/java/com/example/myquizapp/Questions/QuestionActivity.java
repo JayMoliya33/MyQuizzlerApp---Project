@@ -1,7 +1,6 @@
 package com.example.myquizapp.Questions;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -95,12 +94,16 @@ public class QuestionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (modelMatch()) {
-                    bookmarksList.remove(matchedQuestionPosition);
-                    bookmarkBtn.setImageDrawable(getDrawable(R.drawable.bookmark_border));
+                    if(android.os.Build.VERSION.SDK_INT>=16) {
+                        bookmarksList.remove(matchedQuestionPosition);
+                        bookmarkBtn.setImageDrawable(getResources().getDrawable(R.drawable.bookmark_border));
+                    }
                 } else {
-                    // add question to bookmark activity
-                    bookmarksList.add(list.get(position));
-                    bookmarkBtn.setImageDrawable(getDrawable(R.drawable.bookmark));
+                    if(android.os.Build.VERSION.SDK_INT>=16) {
+                        // add question to bookmark activity
+                        bookmarksList.add(list.get(position));
+                        bookmarkBtn.setImageDrawable(getResources().getDrawable(R.drawable.bookmark));
+                    }
                 }
             }
         });
@@ -117,7 +120,6 @@ public class QuestionActivity extends AppCompatActivity {
         loadingDialog.getWindow().setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         // set Rounded Loading Dialog
         loadingDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.rounded_corners));
-
         loadingDialog.show();
 
         list = new ArrayList<>();
@@ -166,7 +168,7 @@ public class QuestionActivity extends AppCompatActivity {
                     sharebtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            String body = list.get(position).getQuestion() + "\n" +
+                            String body = "Q. "+list.get(position).getQuestion() + "\n" +
                                     list.get(position).getOptionA() + "\n" +
                                     list.get(position).getOptionB() + "\n" +
                                     list.get(position).getOptionC() + "\n" +

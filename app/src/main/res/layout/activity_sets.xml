@@ -18,10 +18,10 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:padding="@dimen/_16sdp"
         android:text="@string/sets"
         android:textColor="@android:color/black"
-        android:textSize="28sp"
+        android:textSize="@dimen/_20sdp"
         android:textStyle="bold" />
 
     <GridView
@@ -29,11 +29,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:columnWidth="120dp"
+        android:columnWidth="@dimen/_80sdp"
         android:gravity="center"
-        android:horizontalSpacing="16dp"
+        android:horizontalSpacing="@dimen/_16sdp"
         android:numColumns="auto_fit"
-        android:verticalSpacing="16dp" />
+        android:verticalSpacing="@dimen/_14sdp" />
 
     <com.google.android.gms.ads.AdView
         xmlns:ads="http://schemas.android.com/apk/res-auto"

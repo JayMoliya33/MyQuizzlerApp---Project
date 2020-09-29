@@ -8,4 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!--    Customize your image here-->
+    <style name="ImageViewStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/_150sdp</item>
+        <item name="android:layout_marginTop">@dimen/_8sdp</item>
+        <item name="android:src">@drawable/img_mobile_login</item>
+    </style>
 </resources>

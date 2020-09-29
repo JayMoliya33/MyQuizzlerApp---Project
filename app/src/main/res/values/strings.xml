@@ -7,4 +7,6 @@
     <string name="share">Share</string>
     <string name="next">Next</string>
     <string name="_5_10">5/10</string>
+    <string name="retry">Retry</string>
+    <string name="internetmsg">You have to turned on the Internet.</string>
 </resources>
